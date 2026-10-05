@@ -1,0 +1,12 @@
+{
+  "name": "xhssaver-web",
+  "version": "1.0.0",
+  "description": "Xiaohongshu (XHS) 4K Ultra HD Photo & Video Downloader without Watermark",
+  "main": "api/extract.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  }
+}

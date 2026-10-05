@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XHSSaver — Tải Ảnh & Video Xiaohongshu 4K Không Logo Watermark</title>
+  <meta name="description" content="Công cụ tải trọn bộ Album ảnh 4K Ultra HD và Video Tiểu Hồng Thư (Xiaohongshu) không dính logo watermark, 1-Click tải toàn bộ file ZIP siêu tốc." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #090d16;
+      color: #f1f5f9;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .xhs-gradient-text {
+      background: linear-gradient(135deg, #ff2442 0%, #ff6b81 50%, #ffa8b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .xhs-btn-gradient {
+      background: linear-gradient(135deg, #ff2442 0%, #ff526c 100%);
+    }
+    .xhs-btn-gradient:hover {
+      background: linear-gradient(135deg, #e01936 0%, #ff3b57 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-red-500/30 selection:text-red-200">
+
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-400 flex items-center justify-center shadow-lg shadow-red-500/20 text-white font-black text-lg">
+          <i class="fa-solid fa-camera-retro"></i>
+        </div>
+        <div>
+          <span class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+            XHS<span class="text-red-500">Saver</span>
+            <span class="px-1.5 py-0.5 text-[10px] font-extrabold bg-red-500/20 text-red-400 rounded-md border border-red-500/30">4K PRO</span>
+          </span>
+          <p class="text-[10px] text-slate-400 font-medium hidden sm:block">Xiaohongshu 4K Media Downloader</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <!-- Language switch -->
+        <button id="langToggleBtn" onclick="toggleLang()" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-globe text-red-400"></i>
+          <span id="langLabel">VI</span>
+        </button>
+
+        <!-- VIP Status / Upgrade Button -->
+        <div id="vipStatusContainer">
+          <button onclick="openVipModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 flex items-center gap-1.5 transition-all transform active:scale-95 cursor-pointer">
+            <i class="fa-solid fa-crown text-amber-950"></i>
+            <span id="vipBtnText">Nâng Cấp VIP 49k</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero Section -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 sm:py-12 space-y-8">
+    
+    <!-- Hero Title -->
+    <div class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold">
+        <i class="fa-solid fa-bolt"></i>
+        <span data-i18n="badge_tech">Engine Bóc Tách 4K Ultra HD & 1-Click ZIP</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+        Tải Ảnh & Video <span class="xhs-gradient-text">Xiaohongshu</span><br />Không Logo Watermark
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto leading-relaxed" data-i18n="hero_desc">
+        Bóc tách trọn bộ Album ảnh 4K gốc, tải trọn gói 1 file ZIP hoặc tải video nguyên bản không dính ID logo Tiểu Hồng Thư.
+      </p>
+    </div>
+
+    <!-- Input Form Card -->
+    <div class="glass-panel p-3 sm:p-5 rounded-3xl border border-white/10 shadow-2xl shadow-red-950/20 space-y-3">
+      <div class="relative flex flex-col sm:flex-row items-stretch gap-2">
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 text-sm">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <input 
+            type="text" 
+            id="urlInput"
+            placeholder="Dán link bài viết Xiaohongshu (xhslink.com/... hoặc xiaohongshu.com/...)" 
+            class="w-full pl-10 pr-24 py-3.5 bg-slate-900/90 border border-white/10 rounded-2xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+          />
+          <button 
+            type="button" 
+            id="pasteBtn"
+            onclick="handlePaste()"
+            class="absolute right-2 top-2 bottom-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <i class="fa-regular fa-paste"></i>
+            <span data-i18n="btn_paste">Dán</span>
+          </button>
+        </div>
+
+        <button 
+          type="button" 
+          id="extractBtn"
+          onclick="handleExtract()"
+          class="xhs-btn-gradient text-white font-extrabold px-6 py-3.5 rounded-2xl text-xs sm:text-sm shadow-xl shadow-red-600/25 flex items-center justify-center gap-2 hover:shadow-red-600/40 transform active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+        >
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span id="extractBtnText" data-i18n="btn_extract">Bóc Tách 4K</span>
+        </button>
+      </div>
+
+      <!-- Error / Alert notification -->
+      <div id="alertBox" class="hidden p-3 rounded-2xl text-xs flex items-center gap-2.5 transition-all"></div>
+    </div>
+
+    <!-- Extraction Result Container -->
+    <div id="resultContainer" class="hidden space-y-6 animate-fade-in">
+      
+      <!-- Meta Card -->
+      <div class="glass-panel p-5 rounded-3xl border border-white/10 space-y-4">
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <span id="resBadgeType" class="px-2 py-0.5 text-[10px] font-black uppercase rounded-md bg-red-500/20 text-red-400 border border-red-500/30">ALBUM ẢNH 4K</span>
+            <h2 id="resTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h2>
+            <p id="resAuthor" class="text-xs text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-pen text-red-400"></i>
+              <span></span>
+            </p>
+          </div>
+
+          <!-- Batch Action -->
+          <div id="batchDownloadContainer">
+            <button 
+              id="downloadAllZipBtn"
+              onclick="downloadAllAsZip()" 
+              class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-red-600/20 flex items-center gap-2 cursor-pointer transition-all transform active:scale-95"
+            >
+              <i class="fa-solid fa-file-zipper"></i>
+              <span id="zipBtnText">Tải Trọn Bộ ZIP</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Description if available -->
+        <div id="resDescContainer" class="hidden p-3 bg-slate-900/80 rounded-2xl border border-white/5 text-xs text-slate-300 leading-relaxed max-h-24 overflow-y-auto">
+          <p id="resDescText"></p>
+        </div>
+      </div>
+
+      <!-- Media Items Grid (Photos or Video) -->
+      <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <!-- Injected via JavaScript -->
+      </div>
+
+    </div>
+
+    <!-- Value Proposition Features Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+      <div class="glass-panel p-4 rounded-2xl border border-white/5 space-y-2">
+        <div class="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm font-bold">
+          <i class="fa-solid fa-images"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-200" data-i18n="feat_1_title">Ảnh 4K Gốc Siêu Nét</h3>
+        <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_1_desc">Trích xuất trực tiếp từ cụm máy chủ CDN gốc của Xiaohongshu, sạch 100% watermark.</p>
+      </div>
+
+      <div class="glass-panel p-4 rounded-2xl border border-white/5 space-y-2">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
+          <i class="fa-solid fa-file-zipper"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-200" data-i18n="feat_2_title">Tải 1-Click File ZIP</h3>
+        <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_2_desc">Đóng gói tự động toàn bộ album ảnh chỉ trong 1 giây, tiết kiệm thời gian tối đa cho dân thiết kế.</p>
+      </div>
+
+      <div class="glass-panel p-4 rounded-2xl border border-white/5 space-y-2">
+        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-200" data-i18n="feat_3_title">Bảo Vệ VIP 2 Thiết Bị</h3>
+        <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_3_desc">Kích hoạt tiện lợi trên 1 điện thoại + 1 máy tính. Tự động khóa chống chia sẻ lậu.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: VIP VietQR Upgrade -->
+  <div id="vipModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel max-w-md w-full p-6 rounded-3xl border border-amber-500/30 shadow-2xl space-y-5 relative animate-fade-in bg-slate-900">
+      
+      <button onclick="closeVipModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center space-y-1">
+        <span class="px-2.5 py-0.5 text-[10px] font-black uppercase rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <i class="fa-solid fa-crown mr-1"></i> ĐẶC QUYỀN VIP PRO
+        </span>
+        <h3 class="text-xl font-black text-white">Nâng Cấp XHSSaver VIP</h3>
+        <p class="text-xs text-slate-400">Tải không giới hạn Album 4K & Tải trọn gói ZIP siêu tốc</p>
+      </div>
+
+      <!-- Pricing Card -->
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/20 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-300 block">Gói 30 Ngày Không Giới Hạn</span>
+          <span class="text-[11px] text-slate-500">Tối đa 2 thiết bị chính chủ</span>
+        </div>
+        <div class="text-right">
+          <span class="text-xl font-black text-amber-400">49.000đ</span>
+          <span class="text-[10px] text-slate-500 line-through block">129.000đ</span>
+        </div>
+      </div>
+
+      <!-- VietQR Display -->
+      <div id="qrLoading" class="text-center py-6 text-xs text-slate-400 space-y-2">
+        <i class="fa-solid fa-spinner animate-spin text-2xl text-amber-400"></i>
+        <p>Đang tạo mã VietQR thanh toán tự động...</p>
+      </div>
+
+      <div id="qrDisplay" class="hidden space-y-3 text-center">
+        <div class="p-2.5 bg-white rounded-2xl inline-block shadow-xl">
+          <img id="qrImg" src="" alt="VietQR TPBank" class="w-48 h-48 mx-auto object-contain" />
+        </div>
+
+        <div class="text-xs space-y-1">
+          <p class="text-slate-300 font-bold">Nội dung chuyển khoản: <span id="orderCodeText" class="text-amber-400 font-mono text-sm px-1.5 py-0.5 bg-slate-950 rounded border border-amber-500/30 select-all"></span></p>
+          <p class="text-[11px] text-slate-500">Hệ thống kích hoạt VIP ngay sau 3-5 giây khi nhận tiền</p>
+        </div>
+
+        <button 
+          id="claimKeyBtn" 
+          onclick="checkOrderClaim()"
+          class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+        >
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Tôi Đã Chuyển Khoản — Kích Hoạt VIP</span>
+        </button>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 text-center text-xs text-slate-400">
+        Đã có mã VIP Key? <a href="javascript:void(0)" onclick="closeVipModal(); openKeyInputModal();" class="text-amber-400 font-bold hover:underline">Nhập mã kích hoạt tại đây</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Input Key -->
+  <div id="keyInputModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel max-w-sm w-full p-5 rounded-3xl border border-white/10 shadow-2xl space-y-4 bg-slate-900 relative">
+      <button onclick="closeKeyInputModal()" class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center space-y-1">
+        <h3 class="text-base font-bold text-white">Nhập Mã VIP Key</h3>
+        <p class="text-xs text-slate-400">Dán mã key định dạng XHS-XXXX-XXXX-...</p>
+      </div>
+
+      <input 
+        type="text" 
+        id="inputVipKey" 
+        placeholder="XHS-8F92-K4A1-..." 
+        class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-amber-300 font-mono text-xs focus:ring-2 focus:ring-amber-500 outline-none"
+      />
+
+      <button onclick="submitVipKey()" id="submitKeyBtn" class="w-full py-2.5 bg-amber-500 text-slate-950 font-extrabold text-xs rounded-xl shadow cursor-pointer">
+        Kích Hoạt Thiết Bị
+      </button>
+
+      <div id="keyStatusMsg" class="hidden p-2.5 rounded-xl text-xs text-center"></div>
+    </div>
+  </div>
+
+  <footer class="glass-panel border-t border-white/5 py-6 mt-12 text-center text-xs text-slate-500 space-y-1">
+    <p>© 2026 XHSSaver. Công cụ bóc tách dữ liệu công khai theo chuẩn Web Open Source.</p>
+    <p class="text-[11px] text-slate-600">Hỗ trợ 24/7 qua Telegram: @builder1323_bot</p>
+  </footer>
+
+  <script>
+    let currentLang = 'vi';
+    let currentMediaData = null;
+
+    const translations = {
+      vi: {
+        badge_tech: "Engine Bóc Tách 4K Ultra HD & 1-Click ZIP",
+        hero_desc: "Bóc tách trọn bộ Album ảnh 4K gốc, tải trọn gói 1 file ZIP hoặc tải video nguyên bản không dính ID logo Tiểu Hồng Thư.",
+        btn_paste: "Dán",
+        btn_extract: "Bóc Tách 4K",
+        feat_1_title: "Ảnh 4K Gốc Siêu Nét",
+        feat_1_desc: "Trích xuất trực tiếp từ cụm máy chủ CDN gốc của Xiaohongshu, sạch 100% watermark.",
+        feat_2_title: "Tải 1-Click File ZIP",
+        feat_2_desc: "Đóng gói tự động toàn bộ album ảnh chỉ trong 1 giây, tiết kiệm thời gian tối đa cho dân thiết kế.",
+        feat_3_title: "Bảo Vệ VIP 2 Thiết Bị",
+        feat_3_desc: "Kích hoạt tiện lợi trên 1 điện thoại + 1 máy tính. Tự động khóa chống chia sẻ lậu."
+      },
+      en: {
+        badge_tech: "4K Ultra HD Extractor & 1-Click ZIP Engine",
+        hero_desc: "Extract full 4K photo albums, download all-in-one ZIP archive or original videos without Xiaohongshu watermark.",
+        btn_paste: "Paste",
+        btn_extract: "Extract 4K",
+        feat_1_title: "Original 4K Master Photos",
+        feat_1_desc: "Extracted directly from Xiaohongshu CDN cluster with zero watermark compression.",
+        feat_2_title: "1-Click Full ZIP Package",
+        feat_2_desc: "Automatically compress all photos into a single ZIP file in 1 second.",
+        feat_3_title: "2-Device Anti-Share Protection",
+        feat_3_desc: "Activate across 1 mobile + 1 desktop. 72-hour automated lockdown on unauthorized sharing."
+      }
+    };
+
+    function toggleLang() {
+      currentLang = currentLang === 'vi' ? 'en' : 'vi';
+      document.getElementById('langLabel').textContent = currentLang.toUpperCase();
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    function getDeviceId() {
+      let devId = localStorage.getItem('xhs_device_id');
+      if (!devId) {
+        devId = 'dev_xhs_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
+        localStorage.setItem('xhs_device_id', devId);
+      }
+      return devId;
+    }
+
+    async function handlePaste() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) document.getElementById('urlInput').value = text;
+      } catch (e) {
+        alert("Vui lòng cấp quyền dán hoặc dán thủ công!");
+      }
+    }
+
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById('alertBox');
+      box.innerHTML = `<i class="fa-solid ${isError ? 'fa-triangle-exclamation text-red-400' : 'fa-circle-check text-green-400'}"></i> <span>${msg}</span>`;
+      box.className = `p-3 rounded-2xl text-xs flex items-center gap-2.5 ${isError ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'}`;
+      box.classList.remove('hidden');
+    }
+
+    function hideAlert() {
+      document.getElementById('alertBox').classList.add('hidden');
+    }
+
+    async function handleExtract() {
+      const urlInput = document.getElementById('urlInput');
+      const extractBtn = document.getElementById('extractBtn');
+      const btnText = document.getElementById('extractBtnText');
+      const url = urlInput.value.trim();
+
+      if (!url) {
+        showAlert("Vui lòng dán đường link Xiaohongshu cần tải!");
+        return;
+      }
+
+      hideAlert();
+      btnText.textContent = "Đang Bóc Tách...";
+      extractBtn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const res = await resp.json();
+
+        if (res.success && res.data) {
+          renderResult(res.data);
+        } else {
+          showAlert(res.error || "Không thể bóc tách nội dung này.");
+        }
+      } catch (err) {
+        showAlert("Lỗi kết nối máy chủ bóc tách: " + err.message);
+      } finally {
+        btnText.textContent = translations[currentLang].btn_extract;
+        extractBtn.disabled = false;
+      }
+    }
+
+    function triggerDirectDownload(url, filename) {
+      const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function renderResult(data) {
+      currentMediaData = data;
+      const container = document.getElementById('resultContainer');
+      const resTitle = document.getElementById('resTitle');
+      const resAuthor = document.getElementById('resAuthor');
+      const resDescContainer = document.getElementById('resDescContainer');
+      const resDescText = document.getElementById('resDescText');
+      const mediaGrid = document.getElementById('mediaGrid');
+      const resBadgeType = document.getElementById('resBadgeType');
+
+      resTitle.textContent = data.title || "Bộ ảnh Tiểu Hồng Thư 4K";
+      resAuthor.querySelector('span').textContent = `@${data.author || 'Creator XHS'}`;
+
+      if (data.desc) {
+        resDescText.textContent = data.desc;
+        resDescContainer.classList.remove('hidden');
+      } else {
+        resDescContainer.classList.add('hidden');
+      }
+
+      mediaGrid.innerHTML = '';
+
+      if (data.type === 'video' && data.videoUrl) {
+        resBadgeType.textContent = "VIDEO HD GỐC";
+        document.getElementById('batchDownloadContainer').classList.add('hidden');
+
+        mediaGrid.innerHTML = `
+          <div class="col-span-full max-w-md mx-auto w-full glass-panel p-3 rounded-2xl space-y-3">
+            <video src="${data.videoUrl}" controls class="w-full aspect-[9/16] rounded-xl object-cover bg-black"></video>
+            <button onclick="triggerDirectDownload('${data.videoUrl}', 'xhs_video_${Date.now()}.mp4')" class="w-full py-2.5 xhs-btn-gradient text-white font-bold text-xs rounded-xl shadow flex items-center justify-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-download"></i> Tải Video Không Watermark
+            </button>
+          </div>
+        `;
+      } else if (data.images && data.images.length > 0) {
+        resBadgeType.textContent = `${data.images.length} ẢNH 4K GỐC`;
+        document.getElementById('batchDownloadContainer').classList.remove('hidden');
+
+        data.images.forEach((imgUrl, idx) => {
+          const item = document.createElement('div');
+          item.className = "glass-panel p-2 rounded-2xl space-y-2 group";
+          item.innerHTML = `
+            <div class="relative rounded-xl overflow-hidden aspect-[3/4] bg-slate-950">
+              <img src="${imgUrl}" alt="Photo ${idx + 1}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
+              <span class="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-black bg-slate-950/70 text-white rounded-md backdrop-blur">#${idx + 1}</span>
+            </div>
+            <button onclick="triggerDirectDownload('${imgUrl}', 'xhs_photo_${idx + 1}_${Date.now()}.jpg')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-white/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+              <i class="fa-solid fa-download text-red-400"></i> Tải 4K
+            </button>
+          `;
+          mediaGrid.appendChild(item);
+        });
+      }
+
+      container.classList.remove('hidden');
+      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function downloadAllAsZip() {
+      if (!currentMediaData || !currentMediaData.images || currentMediaData.images.length === 0) return;
+      
+      const zipBtnText = document.getElementById('zipBtnText');
+      const zipBtn = document.getElementById('downloadAllZipBtn');
+      zipBtnText.textContent = "Đang Nén ZIP (0%)...";
+      zipBtn.disabled = true;
+
+      try {
+        const zip = new JSZip();
+        const folder = zip.folder("xhs_album_4k");
+        const total = currentMediaData.images.length;
+
+        for (let i = 0; i < total; i++) {
+          const url = currentMediaData.images[i];
+          const proxyUrl = `/api/download?url=${encodeURIComponent(url)}`;
+          const resp = await fetch(proxyUrl);
+          const blob = await resp.blob();
+          folder.file(`photo_${i + 1}.jpg`, blob);
+          zipBtnText.textContent = `Đang Nén (${Math.round(((i + 1) / total) * 100)}%)...`;
+        }
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        saveAs(zipBlob, `xhs_album_${currentMediaData.id || Date.now()}.zip`);
+        zipBtnText.textContent = "Tải Trọn Bộ ZIP";
+      } catch (e) {
+        alert("Lỗi khi nén file ZIP: " + e.message);
+        zipBtnText.textContent = "Tải Trọn Bộ ZIP";
+      } finally {
+        zipBtn.disabled = false;
+      }
+    }
+
+    // Modal Operations
+    let currentOrderCode = null;
+
+    async function openVipModal() {
+      document.getElementById('vipModal').classList.remove('hidden');
+      document.getElementById('qrLoading').classList.remove('hidden');
+      document.getElementById('qrDisplay').classList.add('hidden');
+
+      try {
+        const resp = await fetch('/api/order?action=create', { method: 'POST' });
+        const data = await resp.json();
+        if (data.success) {
+          currentOrderCode = data.orderCode;
+          document.getElementById('qrImg').src = data.qrUrl;
+          document.getElementById('orderCodeText').textContent = data.orderCode;
+          document.getElementById('qrLoading').classList.add('hidden');
+          document.getElementById('qrDisplay').classList.remove('hidden');
+        }
+      } catch (e) {
+        alert("Không thể kết nối máy chủ tạo mã thanh toán: " + e.message);
+      }
+    }
+
+    function closeVipModal() {
+      document.getElementById('vipModal').classList.add('hidden');
+    }
+
+    function openKeyInputModal() {
+      document.getElementById('keyInputModal').classList.remove('hidden');
+    }
+
+    function closeKeyInputModal() {
+      document.getElementById('keyInputModal').classList.add('hidden');
+    }
+
+    async function submitVipKey() {
+      const key = document.getElementById('inputVipKey').value.trim();
+      const statusMsg = document.getElementById('keyStatusMsg');
+      const deviceId = getDeviceId();
+
+      if (!key) return;
+      statusMsg.className = "p-2 rounded-xl text-xs text-center bg-amber-500/20 text-amber-300 block";
+      statusMsg.textContent = "Đang xác thực thiết bị...";
+
+      try {
+        const resp = await fetch('/api/order?action=verify-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vipKey: key, deviceId })
+        });
+        const res = await resp.json();
+
+        if (res.valid) {
+          localStorage.setItem('xhs_vip_key', key);
+          statusMsg.className = "p-2 rounded-xl text-xs text-center bg-green-500/20 text-green-300 block font-bold";
+          statusMsg.textContent = `🎉 Kích hoạt VIP thành công! Thiết bị (${res.deviceCount || 1}/2). Còn ${res.daysLeft} ngày.`;
+          setTimeout(() => {
+            closeKeyInputModal();
+            updateVipUI();
+          }, 1500);
+        } else {
+          statusMsg.className = "p-2 rounded-xl text-xs text-center bg-red-500/20 text-red-300 block";
+          statusMsg.textContent = res.error || "Mã VIP không hợp lệ!";
+        }
+      } catch (e) {
+        statusMsg.className = "p-2 rounded-xl text-xs text-center bg-red-500/20 text-red-300 block";
+        statusMsg.textContent = "Lỗi kết nối máy chủ: " + e.message;
+      }
+    }
+
+    async function checkOrderClaim() {
+      if (!currentOrderCode) return;
+      const btn = document.getElementById('claimKeyBtn');
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Đang kiểm tra SePay...</span>`;
+
+      try {
+        const resp = await fetch('/api/order?action=claim-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderCode: currentOrderCode })
+        });
+        const res = await resp.json();
+
+        if (res.success && res.vipKey) {
+          localStorage.setItem('xhs_vip_key', res.vipKey);
+          alert("🎉 Chúc mừng! Giao dịch thành công. Mã VIP của bạn: " + res.vipKey);
+          closeVipModal();
+          updateVipUI();
+        } else {
+          alert(res.error || "Hệ thống đang kiểm tra. Vui lòng đợi thêm vài giây!");
+        }
+      } catch (e) {
+        alert("Lỗi kết nối: " + e.message);
+      } finally {
+        btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Tôi Đã Chuyển Khoản — Kích Hoạt VIP</span>`;
+      }
+    }
+
+    function updateVipUI() {
+      const key = localStorage.getItem('xhs_vip_key');
+      const container = document.getElementById('vipStatusContainer');
+      if (key) {
+        container.innerHTML = `
+          <div class="px-3 py-1.5 rounded-xl bg-green-500/20 border border-green-500/40 text-green-300 text-xs font-black flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-halved text-green-400"></i>
+            <span>VIP PRO (ĐÃ KÍCH HOẠT)</span>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize
+    updateVipUI();
+  </script>
+</body>
+</html>
