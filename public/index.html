@@ -163,6 +163,53 @@
         </div>
       </div>
 
+      
+      <!-- AI Content Repurposing Studio (Game Changer) -->
+      <div id="aiStudioCard" class="glass-panel p-5 rounded-3xl border border-red-500/30 bg-gradient-to-br from-slate-900 via-slate-900/90 to-red-950/20 space-y-4 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-500 to-rose-400 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-red-500/30">
+              <i class="fa-solid fa-sparkles"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-white flex items-center gap-2">
+                AI Content Repurpose Studio
+                <span class="px-2 py-0.5 text-[10px] font-extrabold bg-red-500/20 text-red-300 rounded-full border border-red-500/30">TỰ ĐỘNG VIẾT BÀI</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">Tự động dịch và biến bài viết Trung thành bài bán hàng Facebook, Threads, kịch bản TikTok</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-white/10 self-start sm:self-auto">
+            <button onclick="switchAiTab('facebook')" id="tabBtnFb" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-red-500 text-white shadow">
+              <i class="fa-brands fa-facebook"></i> Facebook
+            </button>
+            <button onclick="switchAiTab('threads')" id="tabBtnThreads" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition-all">
+              <i class="fa-brands fa-threads"></i> Threads
+            </button>
+            <button onclick="switchAiTab('tiktok')" id="tabBtnTiktok" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition-all">
+              <i class="fa-brands fa-tiktok"></i> Kịch Bản Video
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Content Output Body -->
+        <div class="relative">
+          <div id="aiLoading" class="hidden py-8 text-center text-xs text-slate-400 space-y-2">
+            <i class="fa-solid fa-spinner animate-spin text-xl text-red-400"></i>
+            <p>AI đang phân tích ý tưởng và sáng tạo nội dung...</p>
+          </div>
+
+          <div id="aiContentBox" class="p-4 bg-slate-950/90 rounded-2xl border border-white/10 text-xs text-slate-200 leading-relaxed font-sans min-h-[140px] whitespace-pre-wrap select-all">
+          </div>
+
+          <button onclick="copyAiContent()" id="copyAiBtn" class="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-white/10 flex items-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer">
+            <i class="fa-regular fa-copy"></i>
+            <span id="copyAiBtnText">Sao Chép</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Media Items Grid (Photos or Video) -->
       <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         <!-- Injected via JavaScript -->
@@ -465,6 +512,7 @@
 
       container.classList.remove('hidden');
       container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      generateAiContentForMedia(data.title, data.desc, data.author);
     }
 
     async function downloadAllAsZip() {
@@ -613,6 +661,74 @@
 
     // Initialize
     updateVipUI();
+  
+    let currentAiContent = { facebook: '', threads: '', tiktok: '' };
+    let currentAiTab = 'facebook';
+
+    async function generateAiContentForMedia(title, desc, author) {
+      const loading = document.getElementById('aiLoading');
+      const box = document.getElementById('aiContentBox');
+      loading.classList.remove('hidden');
+      box.textContent = '';
+
+      try {
+        const resp = await fetch('/api/ai-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, desc, author })
+        });
+        const res = await resp.json();
+        if (res.success && res.data && res.data.results) {
+          currentAiContent = res.data.results;
+          switchAiTab(currentAiTab);
+        } else {
+          box.textContent = 'Không thể tạo nội dung tự động cho bài viết này.';
+        }
+      } catch (e) {
+        box.textContent = 'Lỗi kết nối AI: ' + e.message;
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function switchAiTab(tab) {
+      currentAiTab = tab;
+      const btnFb = document.getElementById('tabBtnFb');
+      const btnThreads = document.getElementById('tabBtnThreads');
+      const btnTiktok = document.getElementById('tabBtnTiktok');
+      const box = document.getElementById('aiContentBox');
+
+      [btnFb, btnThreads, btnTiktok].forEach(b => {
+        b.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition-all';
+      });
+
+      if (tab === 'facebook') {
+        btnFb.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-red-500 text-white shadow';
+        box.textContent = currentAiContent.facebook || 'Đang tạo bài viết Facebook...';
+      } else if (tab === 'threads') {
+        btnThreads.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-red-500 text-white shadow';
+        box.textContent = currentAiContent.threads || 'Đang tạo bài viết Threads...';
+      } else if (tab === 'tiktok') {
+        btnTiktok.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-red-500 text-white shadow';
+        box.textContent = currentAiContent.tiktok || 'Đang tạo kịch bản TikTok...';
+      }
+    }
+
+    async function copyAiContent() {
+      const box = document.getElementById('aiContentBox');
+      const text = box.textContent;
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const btnText = document.getElementById('copyAiBtnText');
+        btnText.textContent = 'Đã Chép!';
+        setTimeout(() => { btnText.textContent = 'Sao Chép'; }, 2000);
+      } catch (e) {
+        alert('Vui lòng bôi đen và sao chép thủ công!');
+      }
+    }
+
   </script>
 </body>
 </html>
