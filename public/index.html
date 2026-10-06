@@ -37,7 +37,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-red-500/30 selection:text-red-200">
+<body class="min-h-screen flex flex-col selection:bg-red-500/30 selection:text-red-200 overflow-x-hidden antialiased">
 
   <!-- Navigation -->
   <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5">
@@ -66,7 +66,7 @@
         <div id="vipStatusContainer">
           <button onclick="openVipModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 flex items-center gap-1.5 transition-all transform active:scale-95 cursor-pointer">
             <i class="fa-solid fa-crown text-amber-950"></i>
-            <span id="vipBtnText">Nâng Cấp VIP 49k</span>
+            <span id="vipBtnText" class="hidden xs:inline">Nâng Cấp </span>VIP 49k
           </button>
         </div>
       </div>
@@ -74,7 +74,7 @@
   </header>
 
   <!-- Main Hero Section -->
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 sm:py-12 space-y-8">
+  <main class="flex-1 max-w-4xl w-full mx-auto px-3.5 sm:px-4 py-5 sm:py-10 space-y-6 sm:space-y-8">
     
     <!-- Hero Title -->
     <div class="text-center space-y-3">
@@ -82,7 +82,7 @@
         <i class="fa-solid fa-bolt"></i>
         <span data-i18n="badge_tech">Engine Bóc Tách 4K Ultra HD & 1-Click ZIP</span>
       </div>
-      <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+      <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
         Tải Ảnh & Video <span class="xhs-gradient-text">Xiaohongshu</span><br />Không Logo Watermark
       </h1>
       <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto leading-relaxed" data-i18n="hero_desc">
@@ -99,9 +99,7 @@
           </div>
           <input 
             type="text" 
-            id="urlInput"
-            placeholder="Dán link bài viết Xiaohongshu (xhslink.com/... hoặc xiaohongshu.com/...)" 
-            class="w-full pl-10 pr-24 py-3.5 bg-slate-900/90 border border-white/10 rounded-2xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+            id="urlInput" placeholder="Dán link bài viết Xiaohongshu (xhslink.com/... hoặc xiaohongshu.com/...)" class="w-full pl-10 pr-20 py-3.5 bg-slate-900/90 border border-white/10 rounded-2xl text-slate-100 text-base sm:text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all shadow-inner"
           />
           <button 
             type="button" 
@@ -133,26 +131,28 @@
     <div id="resultContainer" class="hidden space-y-6 animate-fade-in">
       
       <!-- Meta Card -->
-      <div class="glass-panel p-5 rounded-3xl border border-white/10 space-y-4">
-        <div class="flex items-start justify-between gap-4">
-          <div class="space-y-1">
-            <span id="resBadgeType" class="px-2 py-0.5 text-[10px] font-black uppercase rounded-md bg-red-500/20 text-red-400 border border-red-500/30">ALBUM ẢNH 4K</span>
-            <h2 id="resTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h2>
-            <p id="resAuthor" class="text-xs text-slate-400 flex items-center gap-1.5">
-              <i class="fa-solid fa-user-pen text-red-400"></i>
-              <span></span>
-            </p>
+      <div class="glass-panel p-4 sm:p-5 rounded-3xl border border-white/10 space-y-3.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="resBadgeType" class="px-2 py-0.5 text-[10px] font-black uppercase rounded-md bg-red-500/20 text-red-400 border border-red-500/30">ALBUM ẢNH 4K</span>
+              <p id="resAuthor" class="text-xs text-slate-400 flex items-center gap-1 font-medium">
+                <i class="fa-solid fa-user-pen text-red-400"></i>
+                <span></span>
+              </p>
+            </div>
+            <h2 id="resTitle" class="text-sm sm:text-base md:text-lg font-bold text-white leading-snug"></h2>
           </div>
 
           <!-- Batch Action -->
-          <div id="batchDownloadContainer">
+          <div id="batchDownloadContainer" class="w-full sm:w-auto">
             <button 
               id="downloadAllZipBtn"
               onclick="downloadAllAsZip()" 
-              class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-red-600/20 flex items-center gap-2 cursor-pointer transition-all transform active:scale-95"
+              class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95"
             >
               <i class="fa-solid fa-file-zipper"></i>
-              <span id="zipBtnText">Tải Trọn Bộ ZIP</span>
+              <span id="zipBtnText">Tải Trọn Bộ File ZIP</span>
             </button>
           </div>
         </div>
@@ -180,33 +180,38 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-white/10 self-start sm:self-auto">
-            <button onclick="switchAiTab('facebook')" id="tabBtnFb" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-red-500 text-white shadow">
-              <i class="fa-brands fa-facebook"></i> Facebook
+          <div class="w-full sm:w-auto grid grid-cols-3 gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10">
+            <button onclick="switchAiTab('facebook')" id="tabBtnFb" class="px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all bg-red-500 text-white shadow text-center flex items-center justify-center gap-1">
+              <i class="fa-brands fa-facebook"></i> <span>Facebook</span>
             </button>
-            <button onclick="switchAiTab('threads')" id="tabBtnThreads" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition-all">
-              <i class="fa-brands fa-threads"></i> Threads
+            <button onclick="switchAiTab('threads')" id="tabBtnThreads" class="px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-slate-400 hover:text-slate-200 transition-all text-center flex items-center justify-center gap-1">
+              <i class="fa-brands fa-threads"></i> <span>Threads</span>
             </button>
-            <button onclick="switchAiTab('tiktok')" id="tabBtnTiktok" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition-all">
-              <i class="fa-brands fa-tiktok"></i> Kịch Bản Video
+            <button onclick="switchAiTab('tiktok')" id="tabBtnTiktok" class="px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-slate-400 hover:text-slate-200 transition-all text-center flex items-center justify-center gap-1">
+              <i class="fa-brands fa-tiktok"></i> <span>Kịch Bản</span>
             </button>
           </div>
         </div>
 
         <!-- AI Content Output Body -->
-        <div class="relative">
-          <div id="aiLoading" class="hidden py-8 text-center text-xs text-slate-400 space-y-2">
-            <i class="fa-solid fa-spinner animate-spin text-xl text-red-400"></i>
-            <p>AI đang phân tích ý tưởng và sáng tạo nội dung...</p>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-[11px] text-slate-400 font-medium"><i class="fa-solid fa-pen-nib text-red-400 mr-1"></i>Nội dung AI đề xuất:</span>
+            <button onclick="copyAiContent()" id="copyAiBtn" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-white/10 flex items-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer">
+              <i class="fa-regular fa-copy"></i>
+              <span id="copyAiBtnText">Sao Chép</span>
+            </button>
           </div>
 
-          <div id="aiContentBox" class="p-4 bg-slate-950/90 rounded-2xl border border-white/10 text-xs text-slate-200 leading-relaxed font-sans min-h-[140px] whitespace-pre-wrap select-all">
-          </div>
+          <div class="relative">
+            <div id="aiLoading" class="hidden py-8 text-center text-xs text-slate-400 space-y-2">
+              <i class="fa-solid fa-spinner animate-spin text-xl text-red-400"></i>
+              <p>AI đang phân tích ý tưởng và sáng tạo nội dung...</p>
+            </div>
 
-          <button onclick="copyAiContent()" id="copyAiBtn" class="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-white/10 flex items-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer">
-            <i class="fa-regular fa-copy"></i>
-            <span id="copyAiBtnText">Sao Chép</span>
-          </button>
+            <div id="aiContentBox" class="p-3.5 sm:p-4 bg-slate-950/90 rounded-2xl border border-white/10 text-xs text-slate-200 leading-relaxed font-sans min-h-[120px] max-h-72 overflow-y-auto whitespace-pre-wrap select-all">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -248,7 +253,7 @@
 
   <!-- Modal: VIP VietQR Upgrade -->
   <div id="vipModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-3xl border border-amber-500/30 shadow-2xl space-y-5 relative animate-fade-in bg-slate-900">
+    <div class="glass-panel max-w-md w-full p-4 sm:p-6 rounded-3xl border border-amber-500/30 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto relative animate-fade-in bg-slate-900">
       
       <button onclick="closeVipModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors">
         <i class="fa-solid fa-xmark"></i>
@@ -282,7 +287,7 @@
 
       <div id="qrDisplay" class="hidden space-y-3 text-center">
         <div class="p-2.5 bg-white rounded-2xl inline-block shadow-xl">
-          <img id="qrImg" src="" alt="VietQR TPBank" class="w-48 h-48 mx-auto object-contain" />
+          <img id="qrImg" src="" alt="VietQR TPBank" class="w-40 h-40 sm:w-48 sm:h-48 mx-auto object-contain" />
         </div>
 
         <div class="text-xs space-y-1">
@@ -505,12 +510,12 @@
                 <i class="fa-solid fa-magnifying-glass-plus"></i> Xem 4K
               </div>
             </div>
-            <div class="grid grid-cols-2 gap-1.5">
-              <button onclick="triggerDirectDownload('${imgUrl}', 'xhs_photo_${idx + 1}_${Date.now()}.jpg')" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-xl border border-white/10 flex items-center justify-center gap-1 transition-colors cursor-pointer">
-                <i class="fa-solid fa-download text-red-400"></i> Tải 4K
+            <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+              <button onclick="triggerDirectDownload('${imgUrl}', 'xhs_photo_${idx + 1}_${Date.now()}.jpg')" class="py-2 px-1 bg-slate-800 active:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-xl border border-white/10 flex items-center justify-center gap-1 transition-colors cursor-pointer min-h-[36px]">
+                <i class="fa-solid fa-download text-red-400 text-xs"></i> <span>Tải 4K</span>
               </button>
-              <button onclick="cleanImageAi('${imgUrl}', ${idx})" id="clean_btn_${idx}" class="py-2 bg-gradient-to-r from-red-600/80 to-rose-600/80 hover:from-red-500 hover:to-rose-500 text-white font-bold text-[11px] rounded-xl shadow flex items-center justify-center gap-1 transition-all cursor-pointer">
-                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Xóa Chữ
+              <button onclick="cleanImageAi('${imgUrl}', ${idx})" id="clean_btn_${idx}" class="py-2 px-1 bg-gradient-to-r from-red-600 to-rose-600 active:from-red-500 active:to-rose-500 text-white font-bold text-[11px] rounded-xl shadow flex items-center justify-center gap-1 transition-all cursor-pointer min-h-[36px]">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-xs"></i> <span>Xóa Chữ</span>
               </button>
             </div>
           `;
@@ -741,19 +746,21 @@
 
   <!-- Lightbox Modal for 4K Zoom -->
   <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-lg flex items-center justify-center p-4">
-    <div class="max-w-4xl w-full max-h-[90vh] flex flex-col items-center relative animate-fade-in space-y-3">
-      <button onclick="closeLightbox()" class="absolute -top-10 right-0 px-3 py-1 bg-slate-800 text-slate-300 hover:text-white rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer">
-        <i class="fa-solid fa-xmark"></i> Đóng (ESC)
-      </button>
-
-      <div class="relative max-h-[75vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900">
-        <img id="lightboxImg" src="" alt="4K Full Image" class="max-h-[75vh] w-auto object-contain mx-auto" />
+    <div class="max-w-4xl w-full max-h-[95vh] flex flex-col items-center relative animate-fade-in space-y-2.5">
+      <div class="w-full flex items-center justify-between px-1">
+        <span id="lightboxIndex" class="text-xs text-slate-300 font-bold"></span>
+        <button onclick="closeLightbox()" class="px-3 py-1.5 bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer">
+          <i class="fa-solid fa-xmark"></i> <span>Đóng</span>
+        </button>
       </div>
 
-      <div class="flex items-center gap-3">
-        <span id="lightboxIndex" class="text-xs text-slate-400 font-bold"></span>
-        <button id="lightboxDownloadBtn" onclick="" class="px-4 py-2 xhs-btn-gradient text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-download"></i> Tải Ảnh 4K Này
+      <div class="relative max-h-[70vh] sm:max-h-[75vh] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 flex items-center justify-center">
+        <img id="lightboxImg" src="" alt="4K Full Image" class="max-h-[70vh] sm:max-h-[75vh] max-w-full object-contain mx-auto" />
+      </div>
+
+      <div class="w-full pt-1">
+        <button id="lightboxDownloadBtn" onclick="" class="w-full sm:w-auto mx-auto px-6 py-2.5 xhs-btn-gradient text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-download"></i> <span>Tải Ảnh 4K Này Về Máy</span>
         </button>
       </div>
     </div>
