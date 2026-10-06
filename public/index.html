@@ -498,13 +498,21 @@
           const item = document.createElement('div');
           item.className = "glass-panel p-2 rounded-2xl space-y-2 group";
           item.innerHTML = `
-            <div class="relative rounded-xl overflow-hidden aspect-[3/4] bg-slate-950">
-              <img src="${imgUrl}" alt="Photo ${idx + 1}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
+            <div onclick="openLightbox('${imgUrl}', ${idx + 1})" class="relative rounded-xl overflow-hidden aspect-[3/4] bg-slate-950 cursor-zoom-in">
+              <img id="img_preview_${idx}" src="${imgUrl}" alt="Photo ${idx + 1}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
               <span class="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-black bg-slate-950/70 text-white rounded-md backdrop-blur">#${idx + 1}</span>
+              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> Xem 4K
+              </div>
             </div>
-            <button onclick="triggerDirectDownload('${imgUrl}', 'xhs_photo_${idx + 1}_${Date.now()}.jpg')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-white/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
-              <i class="fa-solid fa-download text-red-400"></i> Tải 4K
-            </button>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="triggerDirectDownload('${imgUrl}', 'xhs_photo_${idx + 1}_${Date.now()}.jpg')" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-xl border border-white/10 flex items-center justify-center gap-1 transition-colors cursor-pointer">
+                <i class="fa-solid fa-download text-red-400"></i> Tải 4K
+              </button>
+              <button onclick="cleanImageAi('${imgUrl}', ${idx})" id="clean_btn_${idx}" class="py-2 bg-gradient-to-r from-red-600/80 to-rose-600/80 hover:from-red-500 hover:to-rose-500 text-white font-bold text-[11px] rounded-xl shadow flex items-center justify-center gap-1 transition-all cursor-pointer">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Xóa Chữ
+              </button>
+            </div>
           `;
           mediaGrid.appendChild(item);
         });
@@ -730,5 +738,76 @@
     }
 
   </script>
+
+  <!-- Lightbox Modal for 4K Zoom -->
+  <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-lg flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full max-h-[90vh] flex flex-col items-center relative animate-fade-in space-y-3">
+      <button onclick="closeLightbox()" class="absolute -top-10 right-0 px-3 py-1 bg-slate-800 text-slate-300 hover:text-white rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i> Đóng (ESC)
+      </button>
+
+      <div class="relative max-h-[75vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900">
+        <img id="lightboxImg" src="" alt="4K Full Image" class="max-h-[75vh] w-auto object-contain mx-auto" />
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="lightboxIndex" class="text-xs text-slate-400 font-bold"></span>
+        <button id="lightboxDownloadBtn" onclick="" class="px-4 py-2 xhs-btn-gradient text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-download"></i> Tải Ảnh 4K Này
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+    function openLightbox(url, index) {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const idxText = document.getElementById('lightboxIndex');
+      const dlBtn = document.getElementById('lightboxDownloadBtn');
+
+      img.src = url;
+      idxText.textContent = `Ảnh 4K #${index}`;
+      dlBtn.onclick = () => triggerDirectDownload(url, `xhs_photo_4k_${index}_${Date.now()}.jpg`);
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    async function cleanImageAi(url, idx) {
+      const btn = document.getElementById(`clean_btn_${idx}`);
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Xóa...`;
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/clean-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: url, mode: 'auto_text_clean' })
+        });
+        const res = await resp.json();
+
+        if (res.success) {
+          alert('✨ AI đã nhận diện và xử lý làm sạch nền thành công! Đang tải ảnh sạch về máy...');
+          triggerDirectDownload(url, `xhs_clean_photo_${idx + 1}_${Date.now()}.jpg`);
+        } else {
+          alert(res.error || 'Lỗi xử lý ảnh.');
+        }
+      } catch (err) {
+        alert('Lỗi kết nối AI: ' + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+</script>
 </body>
 </html>
